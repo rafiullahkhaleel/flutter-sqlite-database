@@ -12,7 +12,7 @@ class DbHelper {
   static final noteTitle = 'title';
   static final noteDesc = 'desc';
   static Database? _db;
-  Future<Database> get database async {
+  Future<Database> get getDB async {
     return _db ?? await initDB();
   }
 
@@ -44,11 +44,16 @@ class DbHelper {
   }
 
   Future<bool> addNote({required String title, required String desc}) async {
-    final db = await database;
+    final db = await getDB;
     int rowsEffected = await db.insert(tableName, {
       'title': title,
       'desc': desc,
     });
     return rowsEffected > 0;
+  }
+
+  Future<List<Map<String, Object?>>> fetchNote() async {
+    final db = await getDB;
+    return await db.query(tableName);
   }
 }
