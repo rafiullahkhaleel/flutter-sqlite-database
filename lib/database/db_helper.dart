@@ -49,6 +49,7 @@ class DbHelper {
       'title': title,
       'desc': desc,
     });
+    await getDB;
     return rowsEffected > 0;
   }
 
