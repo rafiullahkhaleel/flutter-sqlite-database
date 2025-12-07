@@ -46,8 +46,8 @@ class DbHelper {
   Future<bool> addNote({required String title, required String desc}) async {
     final db = await getDB;
     int rowsEffected = await db.insert(tableName, {
-      'title': title,
-      'desc': desc,
+      noteTitle: title,
+      noteDesc: desc,
     });
     await getDB;
     return rowsEffected > 0;
@@ -56,5 +56,30 @@ class DbHelper {
   Future<List<Map<String, Object?>>> fetchNote() async {
     final db = await getDB;
     return await db.query(tableName);
+  }
+
+  Future<bool> updateNote({
+    required String title,
+    required String desc,
+    required int id,
+  }) async {
+    final db = await getDB;
+    final isUpdate = await db.update(
+      tableName,
+      {noteTitle: title, noteDesc: desc},
+      where: '$sNo = ?',
+      whereArgs: [id],
+    );
+    return isUpdate > 0;
+  }
+
+  Future<bool> deleteNote({required int id}) async {
+    final db = await getDB;
+    final isDelete = await db.delete(
+      tableName,
+      where: '$sNo = ?',
+      whereArgs: [id],
+    );
+    return isDelete > 0;
   }
 }

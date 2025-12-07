@@ -9,6 +9,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  TextEditingController title = TextEditingController();
+  TextEditingController desc = TextEditingController();
   final DbHelper _db = DbHelper.getInstance;
   @override
   void initState() {
@@ -90,8 +92,29 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     child: Text('Cancel'),
                   ),
-                  ElevatedButton(onPressed: (){}, child: Text('Add'))
-                ]
+                  ElevatedButton(
+                    onPressed: () async {
+                      final msg = ScaffoldMessenger.of(context);
+                      final pop = Navigator.of(context);
+                      final check = await _db.addNote(
+                        title: title.text,
+                        desc: desc.text,
+                      );
+                      if (check) {
+                        setState(() async {
+                          await _db.getDB;
+                          pop.pop();
+                          msg.showSnackBar(
+                            SnackBar(content: Text('Note Added')),
+                          );
+                        });
+                      } else {
+                        msg.showSnackBar(SnackBar(content: Text('Try Again')));
+                      }
+                    },
+                    child: Text('Add'),
+                  ),
+                ],
               );
             },
           );
