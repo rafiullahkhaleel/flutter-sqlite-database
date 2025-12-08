@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sqlite_database/database/db_helper.dart';
+import 'package:sqlite_database/widgets/note_dailoge.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,9 +13,10 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController title = TextEditingController();
   TextEditingController desc = TextEditingController();
   final DbHelper _db = DbHelper.getInstance;
+  late Future<List<Map<String, Object?>>> _note;
   @override
   void initState() {
-    _db.getDB;
+    _note = _db.fetchNote();
     super.initState();
   }
 
@@ -28,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
 
       body: FutureBuilder(
-        future: _db.fetchNote(),
+        future: _note,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const Center(child: Text('No Notes available'));
@@ -37,14 +39,66 @@ class _HomeScreenState extends State<HomeScreen> {
               itemCount: snapshot.data?.length,
               itemBuilder: (context, index) {
                 return ListTile(
+                  leading: Text('${index + 1}'),
                   title: Text(
                     snapshot.data?[index][DbHelper.noteTitle].toString() ?? '',
                   ),
                   subtitle: Text(
                     snapshot.data?[index][DbHelper.noteDesc].toString() ?? '',
                   ),
-                  trailing: Text(
-                    snapshot.data?[index][DbHelper.sNo].toString() ?? '',
+                  trailing: Row(
+                    mainAxisSize: .min,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return NoteDialog(
+                                title: title,
+                                desc: desc,
+                                onTap: () async {
+                                  final msg = ScaffoldMessenger.of(context);
+                                  final pop = Navigator.of(context);
+                                  final check = await _db.updateNote(
+                                    title: title.text,
+                                    desc: desc.text,
+                                    id:
+                                        snapshot.data?[index][DbHelper.sNo]
+                                            as int,
+                                  );
+                                  if (check) {
+                                    setState(() {
+                                      _note = _db.fetchNote();
+                                    });
+                                    pop.pop();
+                                    msg.showSnackBar(
+                                      SnackBar(content: Text('Note Updated')),
+                                    );
+                                  } else {
+                                    msg.showSnackBar(
+                                      SnackBar(content: Text('Try Again')),
+                                    );
+                                  }
+                                },
+                              );
+                            },
+                          );
+                        },
+                        icon: Icon(Icons.edit),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          _db.deleteNote(
+                            id: snapshot.data?[index][DbHelper.sNo] as int,
+                          );
+                          setState(() {
+                            _note = _db.fetchNote();
+                          });
+                        },
+                        icon: Icon(Icons.delete),
+                      ),
+                    ],
                   ),
                 );
               },
@@ -57,64 +111,26 @@ class _HomeScreenState extends State<HomeScreen> {
           showDialog(
             context: context,
             builder: (context) {
-              return AlertDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                title: Text('Add Notes'),
-                content: Column(
-                  mainAxisSize: .min,
-                  children: [
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Title',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Title',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                contentPadding: .all(10),
-                actions: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('Cancel'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final msg = ScaffoldMessenger.of(context);
-                      final pop = Navigator.of(context);
-                      final check = await _db.addNote(
-                        title: title.text,
-                        desc: desc.text,
-                      );
-                      if (check) {
-                        setState(() async {
-                          await _db.getDB;
-                          pop.pop();
-                          msg.showSnackBar(
-                            SnackBar(content: Text('Note Added')),
-                          );
-                        });
-                      } else {
-                        msg.showSnackBar(SnackBar(content: Text('Try Again')));
-                      }
-                    },
-                    child: Text('Add'),
-                  ),
-                ],
+              return NoteDialog(
+                title: title,
+                desc: desc,
+                onTap: () async {
+                  final msg = ScaffoldMessenger.of(context);
+                  final pop = Navigator.of(context);
+                  final check = await _db.addNote(
+                    title: title.text,
+                    desc: desc.text,
+                  );
+                  if (check) {
+                    setState(() {
+                      _note = _db.fetchNote();
+                    });
+                    pop.pop();
+                    msg.showSnackBar(SnackBar(content: Text('Note Added')));
+                  } else {
+                    msg.showSnackBar(SnackBar(content: Text('Try Again')));
+                  }
+                },
               );
             },
           );
