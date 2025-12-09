@@ -1,4 +1,4 @@
-import '../../domain/entities.dart';
+import '../../domain/entities/entities.dart';
 
 class NoteModel extends NoteEntity {
   NoteModel({super.id, required super.title, required super.description});
