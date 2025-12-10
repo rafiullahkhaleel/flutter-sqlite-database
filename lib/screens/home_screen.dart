@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           showDialog(
                             context: context,
                             builder: (context) {
-                              return NoteDialog(
+                              return NoteDialogm(
                                 title: title,
                                 desc: desc,
                                 onTap: () async {
@@ -111,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
           showDialog(
             context: context,
             builder: (context) {
-              return NoteDialog(
+              return NoteDialogm(
                 title: title,
                 desc: desc,
                 onTap: () async {

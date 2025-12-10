@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class NoteDialog extends StatelessWidget {
+class NoteDialogm extends StatelessWidget {
   final TextEditingController title;
   final TextEditingController desc;
   final VoidCallback onTap;
-  const NoteDialog({
+  const NoteDialogm({
     super.key,
     required this.title,
     required this.desc,

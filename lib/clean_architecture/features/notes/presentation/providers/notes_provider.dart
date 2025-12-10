@@ -2,13 +2,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:sqlite_database/clean_architecture/features/notes/domain/entities/entities.dart';
 
-import '../data/model/note_model.dart';
-import '../domain/usecases/add_notes.dart';
-import '../domain/usecases/delete_notes.dart';
-import '../domain/usecases/fetch_notes.dart';
-import '../domain/usecases/update_notes.dart';
+import '../../data/datasources/note_local_datasource.dart';
+import '../../data/repositories/note_repository_impl.dart';
+import '../../domain/usecases/add_notes.dart';
+import '../../domain/usecases/delete_notes.dart';
+import '../../domain/usecases/fetch_notes.dart';
+import '../../domain/usecases/update_notes.dart';
 
-class NotesNotifier extends StateNotifier<AsyncValue<List<NoteModel>>> {
+final notesProvider =
+    StateNotifierProvider<NotesNotifier, AsyncValue<List<NoteEntity>>>((ref) {
+      final dataSource = NoteLocalDatasource();
+      final repo = NoteRepositoryImpl(dataSource);
+      return NotesNotifier(
+        FetchNotes(repo),
+        AddNotes(repo),
+        UpdateNotes(repo),
+        DeleteNotes(repo),
+      );
+    });
+
+class NotesNotifier extends StateNotifier<AsyncValue<List<NoteEntity>>> {
   final FetchNotes _fetchNotes;
   final AddNotes _addNotes;
   final UpdateNotes _updateNotes;
