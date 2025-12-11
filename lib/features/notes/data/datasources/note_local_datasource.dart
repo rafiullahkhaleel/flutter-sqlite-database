@@ -1,5 +1,6 @@
-import 'package:sqlite_database/clean_architecture/core/db/database_helper.dart';
-import 'package:sqlite_database/clean_architecture/features/notes/data/model/note_model.dart';
+
+import '../../../../core/db/database_helper.dart';
+import '../model/note_model.dart';
 
 class NoteLocalDatasource {
   final dbHelper = DatabaseHelper.getInstance;

@@ -1,7 +1,9 @@
-import 'package:sqlite_database/clean_architecture/features/notes/data/datasources/note_local_datasource.dart';
-import 'package:sqlite_database/clean_architecture/features/notes/data/model/note_model.dart';
-import 'package:sqlite_database/clean_architecture/features/notes/domain/entities/entities.dart';
-import 'package:sqlite_database/clean_architecture/features/notes/domain/repositories/note_repository.dart';
+
+
+import '../../domain/entities/entities.dart';
+import '../../domain/repositories/note_repository.dart';
+import '../datasources/note_local_datasource.dart';
+import '../model/note_model.dart';
 
 class NoteRepositoryImpl extends NotesRepository {
   final NoteLocalDatasource localDatasource;

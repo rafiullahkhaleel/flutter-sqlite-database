@@ -4,8 +4,8 @@ import '../../domain/entities/entities.dart';
 import '../providers/notes_provider.dart';
 import '../widgets/note_dialog.dart';
 
-class MyHomeScreen extends ConsumerWidget {
-  const MyHomeScreen({super.key});
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:sqlite_database/clean_architecture/features/notes/domain/entities/entities.dart';
 
 import '../../data/datasources/note_local_datasource.dart';
 import '../../data/repositories/note_repository_impl.dart';
+import '../../domain/entities/entities.dart';
 import '../../domain/usecases/add_notes.dart';
 import '../../domain/usecases/delete_notes.dart';
 import '../../domain/usecases/fetch_notes.dart';
