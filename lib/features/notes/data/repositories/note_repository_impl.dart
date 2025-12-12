@@ -1,5 +1,3 @@
-
-
 import '../../domain/entities/entities.dart';
 import '../../domain/repositories/note_repository.dart';
 import '../datasources/note_local_datasource.dart';
@@ -29,7 +27,7 @@ class NoteRepositoryImpl extends NotesRepository {
   @override
   Future<bool> updateNotes(NoteEntity note) async {
     return await localDatasource.updateNotes(
-      NoteModel(title: note.title, description: note.description),
+      NoteModel(title: note.title, description: note.description, id: note.id),
     );
   }
 }
