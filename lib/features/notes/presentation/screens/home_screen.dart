@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sqlite_database/core/utils/snackbar_helper.dart';
 import '../../domain/entities/entities.dart';
 import '../providers/notes_provider.dart';
 import '../widgets/note_dialog.dart';
@@ -10,6 +11,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final notesState = ref.watch(notesProvider);
+    final noteNotifier = ref.read(notesProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -50,15 +52,14 @@ class HomeScreen extends ConsumerWidget {
                               titleText: note.title,
                               descText: note.description,
                               onSubmit: (title, desc) async {
-                                await ref
-                                    .read(notesProvider.notifier)
-                                    .update(note.id!, title, desc);
-
-                                Navigator.pop(context);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text("Note Updated")),
+                                await noteNotifier.update(
+                                  note.id!,
+                                  title,
+                                  desc,
                                 );
+                                if (!context.mounted) return;
+                                Navigator.pop(context);
+                                SnackBarHelper.show(context, 'Note Updated');
                               },
                             );
                           },
@@ -70,13 +71,9 @@ class HomeScreen extends ConsumerWidget {
                     IconButton(
                       icon: const Icon(Icons.delete),
                       onPressed: () async {
-                        await ref
-                            .read(notesProvider.notifier)
-                            .delete(note.id!);
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Note Deleted")),
-                        );
+                        await noteNotifier.delete(note.id!);
+                        if (!context.mounted) return;
+                        SnackBarHelper.show(context, 'Note Deleted');
                       },
                     ),
                   ],
@@ -98,14 +95,10 @@ class HomeScreen extends ConsumerWidget {
               return NoteDialog(
                 isEdit: false,
                 onSubmit: (title, desc) async {
-                  await ref
-                      .read(notesProvider.notifier)
-                      .add(title, desc);
-
+                  await noteNotifier.add(title, desc);
+                  if (!context.mounted) return;
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Note Added")),
-                  );
+                  SnackBarHelper.show(context, 'Note Added');
                 },
               );
             },
