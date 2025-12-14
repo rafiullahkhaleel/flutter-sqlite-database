@@ -9,6 +9,7 @@ import '../../domain/usecases/delete_notes.dart';
 import '../../domain/usecases/fetch_notes.dart';
 import '../../domain/usecases/update_notes.dart';
 
+final errorProvider = StateProvider<String?>((ref) => null);
 final notesProvider =
     StateNotifierProvider<NotesNotifier, AsyncValue<List<NoteEntity>>>((ref) {
       final dataSource = NoteLocalDatasource();
@@ -39,16 +40,30 @@ class NotesNotifier extends StateNotifier<AsyncValue<List<NoteEntity>>> {
     state = AsyncValue.data(data);
   }
 
-  Future<void> add(String title, String description) async {
-    await _addNotes(NoteEntity(title: title, description: description));
-    fetch();
+  Future<bool> add(String title, String description, WidgetRef ref) async {
+    try {
+     return await _addNotes(NoteEntity(title: title, description: description));
+      fetch();
+    } catch (e) {
+      ref.read(errorProvider.notifier).state = e.toString();
+      return false;
+    }
   }
 
-  Future<void> update(int id, String title, String description) async {
-    await _updateNotes(
-      NoteEntity(id: id, title: title, description: description),
-    );
-    fetch();
+  Future<void> update(
+    int id,
+    String title,
+    String description,
+    WidgetRef ref,
+  ) async {
+    try {
+      await _updateNotes(
+        NoteEntity(id: id, title: title, description: description),
+      );
+      fetch();
+    } catch (e, st) {
+      ref.read(errorProvider.notifier).state = e.toString();
+    }
   }
 
   Future<void> delete(int id) async {

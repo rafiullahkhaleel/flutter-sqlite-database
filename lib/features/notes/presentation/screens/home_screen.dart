@@ -10,6 +10,13 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen<String?>(errorProvider, (previous, next) {
+      if (next != null) {
+        SnackBarHelper.show(context, next);
+        ref.read(errorProvider.notifier).state = null;
+      }
+    });
+
     final notesState = ref.watch(notesProvider);
     final noteNotifier = ref.read(notesProvider.notifier);
 
@@ -56,6 +63,7 @@ class HomeScreen extends ConsumerWidget {
                                   note.id!,
                                   title,
                                   desc,
+                                  ref,
                                 );
                                 if (!context.mounted) return;
                                 Navigator.pop(context);
@@ -95,10 +103,10 @@ class HomeScreen extends ConsumerWidget {
               return NoteDialog(
                 isEdit: false,
                 onSubmit: (title, desc) async {
-                  await noteNotifier.add(title, desc);
+                  final check = await noteNotifier.add(title, desc, ref);
                   if (!context.mounted) return;
                   Navigator.pop(context);
-                  SnackBarHelper.show(context, 'Note Added');
+                  if (check) SnackBarHelper.show(context, 'Note Added');
                 },
               );
             },

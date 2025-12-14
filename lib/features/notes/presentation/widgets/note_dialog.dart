@@ -66,10 +66,6 @@ class _NoteDialogState extends State<NoteDialog> {
         ),
         ElevatedButton(
           onPressed: () {
-            if (titleController.text.isEmpty || descController.text.isEmpty) {
-              return;
-            }
-
             widget.onSubmit(titleController.text, descController.text);
           },
           child: Text(widget.isEdit ? "Update" : "Add"),

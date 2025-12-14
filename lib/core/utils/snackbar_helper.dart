@@ -6,7 +6,7 @@ class SnackBarHelper {
       SnackBar(
         content: Text(message),
         behavior: .floating,
-        margin: .all(16),
+        margin: .all(5),
         shape: RoundedRectangleBorder(borderRadius: .circular(12)),
       ),
     );
