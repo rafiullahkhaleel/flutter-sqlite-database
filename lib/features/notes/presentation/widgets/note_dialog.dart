@@ -34,30 +34,32 @@ class _NoteDialogState extends State<NoteDialog> {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       title: Text(widget.isEdit ? "Edit Note" : "Add Note"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: titleController,
-            decoration: InputDecoration(
-              hintText: 'Title',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: titleController,
+              decoration: InputDecoration(
+                hintText: 'Title',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 10),
-          TextField(
-            controller: descController,
-            maxLines: 5,
-            decoration: InputDecoration(
-              hintText: 'Description',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+            const SizedBox(height: 10),
+            TextField(
+              controller: descController,
+              maxLines: 5,
+              decoration: InputDecoration(
+                hintText: 'Description',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       actions: [
         ElevatedButton(

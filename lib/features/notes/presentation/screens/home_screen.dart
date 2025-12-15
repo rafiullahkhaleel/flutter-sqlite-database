@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sqlite_database/core/utils/snackbar_helper.dart';
+import 'package:sqlite_database/features/notes/presentation/widgets/delete_confirmation_dailoge.dart';
 import '../../domain/entities/entities.dart';
 import '../providers/notes_provider.dart';
 import '../widgets/note_dialog.dart';
@@ -10,6 +11,7 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
     ref.listen<String?>(errorProvider, (previous, next) {
       if (next != null) {
         SnackBarHelper.show(context, next);
@@ -59,7 +61,7 @@ class HomeScreen extends ConsumerWidget {
                               titleText: note.title,
                               descText: note.description,
                               onSubmit: (title, desc) async {
-                                await noteNotifier.update(
+                                final check = await noteNotifier.update(
                                   note.id!,
                                   title,
                                   desc,
@@ -67,7 +69,10 @@ class HomeScreen extends ConsumerWidget {
                                 );
                                 if (!context.mounted) return;
                                 Navigator.pop(context);
-                                SnackBarHelper.show(context, 'Note Updated');
+                                if (check) {
+                                  SnackBarHelper.show(context, 'Note Updated');
+                                  noteNotifier.fetch();
+                                }
                               },
                             );
                           },
@@ -78,10 +83,16 @@ class HomeScreen extends ConsumerWidget {
                     /// ---------- Delete Button ----------
                     IconButton(
                       icon: const Icon(Icons.delete),
-                      onPressed: () async {
-                        await noteNotifier.delete(note.id!);
-                        if (!context.mounted) return;
-                        SnackBarHelper.show(context, 'Note Deleted');
+                      onPressed: () {
+                        showDeleteConfirmationDialog(
+                          context: context,
+                          onDelete: () async {
+                            await noteNotifier.delete(note.id!);
+                            noteNotifier.fetch();
+                            if (!context.mounted) return;
+                            SnackBarHelper.show(context, 'Note Deleted');
+                          },
+                        );
                       },
                     ),
                   ],
@@ -106,7 +117,10 @@ class HomeScreen extends ConsumerWidget {
                   final check = await noteNotifier.add(title, desc, ref);
                   if (!context.mounted) return;
                   Navigator.pop(context);
-                  if (check) SnackBarHelper.show(context, 'Note Added');
+                  if (check) {
+                    SnackBarHelper.show(context, 'Note Added');
+                    noteNotifier.fetch();
+                  }
                 },
               );
             },
